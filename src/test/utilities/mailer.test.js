@@ -6,13 +6,13 @@ import Post from '../../models/post'
 
 describe('mailer', () => {
   it('has the correct properties when constructed', () => {
-    const mailer = new Mailer()
+    const mailer = new Mailer(db)
     expect(mailer.templateTag).to.be.a('string')
   }).timeout(10000)
 
   describe('getAccessToken()', () => {
     it('retrieves an access token', async () => {
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const accessToken = await mailer.getAccessToken()
       expect(accessToken).to.be.a('string')
     }).timeout(5000)
@@ -20,7 +20,7 @@ describe('mailer', () => {
 
   describe('readHTMLFile()', () => {
     it('gets a string from an html template file', async () => {
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const html = await mailer.readHTMLFile('src/emails/plain.html')
 
       expect(html).to.be.a('string') &&
@@ -30,7 +30,7 @@ describe('mailer', () => {
 
   describe('createTransporter()', () => {
     it('returns an email transporter', async () => {
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const transporter = await mailer.createTransporter()
 
       expect(transporter.constructor.name).to.equal('Mail')
@@ -47,7 +47,7 @@ describe('mailer', () => {
       }
       await mongoose.connect(keys.mongoURI, mongooseConfig)
 
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const template = await mailer.getEmailTemplateByTag('welcome')
 
       expect(template).to.exist &&
@@ -64,7 +64,7 @@ describe('mailer', () => {
       }
       await mongoose.connect(keys.mongoURI, mongooseConfig)
 
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const template = await mailer.getEmailTemplateByTag('fart')
 
       expect(template).to.equal(null)
@@ -81,7 +81,7 @@ describe('mailer', () => {
       }
       await mongoose.connect(keys.mongoURI, mongooseConfig)
 
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const variables = { firstName: 'Scoob' }
       const recipient = keys.adminEmail
       const templateName = 'fart'
@@ -100,7 +100,7 @@ describe('mailer', () => {
       }
       await mongoose.connect(keys.mongoURI, mongooseConfig)
 
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const variables = { firstName: 'Scoob' }
       const recipient = keys.adminEmail
       const templateName = 'welcome'
@@ -129,7 +129,7 @@ describe('mailer', () => {
         mainMedia: 'some-picture.jpg'
       })
 
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const sent = await mailer.sendBulkEmail(post)
 
       expect(post).to.exist &&

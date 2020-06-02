@@ -1,10 +1,9 @@
 import serverContext from '@/serverContext'
-import User from '@/models/user'
 
 
 export default async (req, res) => {
 
-  const { user } = await serverContext(req, res)
+  const { user, db } = await serverContext(req, res)
   if (!user || !user.isAdmin) {
     return res.status(403).send({ message: "You are not allowed to do that." })
   }
@@ -12,7 +11,7 @@ export default async (req, res) => {
   if (req.method === 'PUT') {
     const { userId, isAdmin } = req.body
 
-    await User.findByIdAndUpdate(userId, { isAdmin })
+    await db.collection('users').findAndModify({ _id, userId }, [], { isAdmin })
     return res.status(200).send({ message: 'Success' })
   }
 

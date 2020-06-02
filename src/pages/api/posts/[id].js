@@ -40,7 +40,7 @@ const updatePost = async (id, body, enableEmailingToUsers) => {
   await Post.findOneAndUpdate(postDocument, body)
 
   // If a bulk-email post was published, send it
-  const mailer = new Mailer()
+  const mailer = new Mailer(db)
   const post = await Post.findOne(postDocument)
   if (
     enableEmailingToUsers &&

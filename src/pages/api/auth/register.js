@@ -66,7 +66,7 @@ export default async (req, res) => {
     }
 
     if (settings.enableEmailingToUsers) {
-      const mailer = new Mailer()
+      const mailer = new Mailer(db)
       const subject = `Welcome, ${newUser.firstName}!`
 
       await mailer.sendEmail(newUser._doc, newUser.email, 'welcome', subject)

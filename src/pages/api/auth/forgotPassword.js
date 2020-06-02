@@ -39,7 +39,7 @@ export default async (req, res) => {
       return res.status(401).send({ message })
     }
 
-    const mailer = new Mailer()
+    const mailer = new Mailer(db)
     const subject = "Forgot your password?"
     const variables = {
       passwordResetLink: `${keys.rootURL}/forgotPassword?token=${jwt.sign({ email }, keys.jwtSecret)}`

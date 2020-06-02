@@ -1,11 +1,9 @@
 import _ from 'lodash'
 import serverContext from "@/serverContext"
-import Product from "@/models/product"
-import User from "@/models/user"
 
 
-const addToCart = async (productId, user) => {
-  const product = await Product.findOne({ _id: productId })
+const addToCart = async (productId, user, db) => {
+  const product = await db.collection('products').findOne({ _id: productId })
 
   // If we are out of stock
   if (product.quantity <= 0) {
@@ -18,13 +16,13 @@ const addToCart = async (productId, user) => {
   }
 
   user.cart.push(product)
-  await User.findOneAndUpdate({ _id: user._id }, { cart: user.cart })
+  await db.collection('users').findAndModify({ _id: user._id }, [], { cart: user.cart })
 
   return user.cart
 }
 
 
-const removeFromCart = async (productId, user) => {
+const removeFromCart = async (productId, user, db) => {
   let removed = false
   const cart = _.filter(user.cart, product => {
 
@@ -37,7 +35,7 @@ const removeFromCart = async (productId, user) => {
     return true
   })
 
-  await User.findOneAndUpdate({ _id: user._id }, { cart })
+  await db.collection('users').findAndModify({ _id: user._id }, [], { cart })
 
   return cart
 }
@@ -45,19 +43,20 @@ const removeFromCart = async (productId, user) => {
 
 export default async (req, res) => {
 
-  const { user, settings } = await serverContext(req, res)
+  const { user, settings, db } = await serverContext(req, res)
+
   if (!user || (!user.isAdmin && !settings.enableStore)) {
     return res.status(403).send({ message: "You are not allowed to do that." })
   }
 
   if (req.method === 'PUT') {
-    const cart = await addToCart(req.query.id, user)
+    const cart = await addToCart(req.query.id, user, db)
     return res.status(200).send(cart)
   }
 
 
   if (req.method === 'DELETE') {
-    const cart = await removeFromCart(req.query.id, user)
+    const cart = await removeFromCart(req.query.id, user, db)
     return res.status(200).send(cart)
   }
 

@@ -1,15 +1,18 @@
-import mongoose from 'mongoose'
+// import mongoose from 'mongoose'
+import { MongoClient } from 'mongodb'
 import keys from '@/keys'
 
 export default async () => {
-  const mongooseConfig = {
+  
+  const config = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
   }
-  await mongoose.connect(keys.mongoURI, mongooseConfig)
-  mongoose.plugin((schema) => {
-    schema.options.usePushEach = true
-  })
+  const client = new MongoClient(keys.mongoURI, config)
+  
+  if (!client.isConnected()) await client.connect();
+
+  const db = client.db(client.s.options.dbName)
+
+  return db
 }

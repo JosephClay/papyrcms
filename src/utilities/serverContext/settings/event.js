@@ -1,7 +1,7 @@
 import configureSettings from './configureSettings'
 
 
-export default async () => {
+export default async (db) => {
   const defaultSettings = { enableEvents: false }
-  return await configureSettings("event", defaultSettings)
+  return await configureSettings("event", defaultSettings, db)
 }

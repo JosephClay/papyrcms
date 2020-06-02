@@ -5,9 +5,9 @@ import authorization from './authorization'
 
 export default async (req, res) => {
 
-  await database()
-  const user = await authorization(req)
-  const settings = await useSettings()
+  const db = await database()
+  const user = await authorization(req, db)
+  const settings = await useSettings(db)
 
-  return { user, settings }
+  return { user, settings, db }
 }

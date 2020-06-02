@@ -1,10 +1,9 @@
 import serverContext from "@/serverContext"
-import User from "@/models/user"
 
 
 export default async (req, res) => {
 
-  const { user } = await serverContext(req, res)
+  const { user, db } = await serverContext(req, res)
   if (!user || !user.isAdmin) {
     return res.status(403).send({ message: "You are not allowed to do that." })
   }
@@ -17,7 +16,7 @@ export default async (req, res) => {
     }
 
     try {
-      await User.findOneAndDelete({ _id: id })
+      await db.collection('users').findAndRemove({ _id: id }, [])
       return res.status(200).send({ message: 'user deleted' })
     } catch (err) {
       return res.status(400).send({ message: err.message })

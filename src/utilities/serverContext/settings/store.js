@@ -1,7 +1,7 @@
 import configureSettings from './configureSettings'
 
 
-export default async () => {
+export default async (db) => {
   const defaultSettings = { enableStore: false }
-  return await configureSettings("store", defaultSettings)
+  return await configureSettings("store", defaultSettings, db)
 }

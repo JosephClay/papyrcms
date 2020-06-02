@@ -1,5 +1,4 @@
 import serverContext from '@/serverContext'
-import Product from '@/models/product'
 
 
 const getProduct = async (id) => {
@@ -38,13 +37,13 @@ const deleteProduct = async (id) => {
 
 export default async (req, res) => {
 
-  const { user, settings } = await serverContext(req, res)
+  const { user, settings, db } = await serverContext(req, res)
   if ((!user || !user.isAdmin) && !settings.enableStore) {
     return res.status(403).send({ message: "You are not allowed to do that." })
   }
 
   if (req.method === 'GET') {
-    const product = await getProduct(req.query.id)
+    const product = await getProduct(req.query.id, db)
     if ((!product || !product.published) && (!user || !user.isAdmin)) {
       return res.status(403).send({ message: 'You are not allowed to do that.' })
     }
@@ -56,7 +55,7 @@ export default async (req, res) => {
     if (!user || !user.isAdmin) {
       return res.status(403).send({ message: 'You are not allowed to do that.' })
     }
-    const product = await updateProduct(req.query.id, req.body)
+    const product = await updateProduct(req.query.id, req.body, db)
     return res.status(200).send(product)
   }
 
@@ -65,7 +64,7 @@ export default async (req, res) => {
     if (!user || !user.isAdmin) {
       return res.status(403).send({ message: 'You are not allowed to do that.' })
     }
-    const message = await deleteProduct(req.query.id)
+    const message = await deleteProduct(req.query.id, db)
     return res.status(200).send(message)
   }
 
